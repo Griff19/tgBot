@@ -28,8 +28,8 @@ try:
     username_input = browser.find_element(By.CSS_SELECTOR, "input[name='username']")
     password_input = browser.find_element(By.CSS_SELECTOR, "input[name='password']")
 
-    username_input.send_keys("ivan_gredasov")
-    password_input.send_keys("W@E#i8h6")
+    username_input.send_keys("")
+    password_input.send_keys("")
     sleep(1)
     login_button = browser.find_element(By.XPATH, "//button[@type='submit']")
     login_button.click()
