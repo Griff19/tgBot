@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
@@ -68,6 +69,8 @@ async def main():
     register_all_handlers(dp)
 
     User.select_all()
+    inst = Instargam(config.instagram['username'], config.instagram['password'])
+    inst.test()
 
     # start
     try:

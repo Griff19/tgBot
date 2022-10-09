@@ -5,8 +5,8 @@ class DB:
     connection = None
     cursor = None
 
-    def __init__(self):
-        self.connection = sqlite3.connect("base.db")
+    def __init__(self, path="base.db"):
+        self.connection = sqlite3.connect(path)
         self.cursor = self.connection.cursor()
 
     def test(self):

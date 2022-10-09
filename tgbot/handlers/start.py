@@ -9,8 +9,13 @@ from tgbot.models.User import User
 
 @rate_limit(10, key="start")
 async def bot_start(message: Message):
-    await message.answer("Здравствуйте! Это демонстрационный бот. Чтобы отправить запрос на добавление нажмите "
-                         "или напишите /invite")
+    id_user = message.from_user.id
+    user = User.find_user_by_id(id_user)
+    if user:
+        await message.answer("Вы можете сгенерировать свой блок:", reply_markup=start_menu)
+    else:
+        await message.answer("Здравствуйте! Это демонстрационный бот. Чтобы отправить запрос на добавление нажмите "
+                             "или напишите /invite")
 
 
 async def button_task(call: CallbackQuery):
