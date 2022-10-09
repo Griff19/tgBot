@@ -28,6 +28,7 @@ class Config:
     tg_bot: TgBot
     db: DbConfig
     misc: Miscellaneous
+    instagram: dict
 
 
 def load_config(path: str = None):
@@ -46,5 +47,9 @@ def load_config(path: str = None):
             user=env.str('DB_USER'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        misc=Miscellaneous(),
+        instagram={
+            'username': env.str("INST_USER"),
+            'password': env.str("INST_PASS")
+        }
     )
