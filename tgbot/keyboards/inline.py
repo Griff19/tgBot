@@ -17,6 +17,26 @@ start_menu = InlineKeyboardMarkup(
     ]
 )
 
+user_block_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Взять блок", callback_data="TakeBlock"),
+            InlineKeyboardButton(text="Следующий блок", callback_data="GetBlock"),
+        ],
+    ]
+)
+
+task_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Закрыть", callback_data="TaskClose"),
+            InlineKeyboardButton(text="Вернуть", callback_data="TaskBack"),
+            InlineKeyboardButton(text="Просмотр", callback_data="TaskView"),
+        ],
+    ]
+)
+
+
 admin_menu = InlineKeyboardMarkup(
     inline_keyboard=[
         [

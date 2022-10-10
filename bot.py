@@ -32,11 +32,11 @@ def register_all_filters(dp):
 
 
 def register_all_handlers(dp):
+    #register_echo(dp)
     register_admin(dp)
     register_start(dp)
+    register_user(dp)
     #register_menu(dp)
-    # register_user(dp)
-    # register_echo(dp)
 
 
 async def register_my_commands(bot):
@@ -69,8 +69,6 @@ async def main():
     register_all_handlers(dp)
 
     User.select_all()
-    inst = Instargam(config.instagram['username'], config.instagram['password'])
-    inst.test()
 
     # start
     try:

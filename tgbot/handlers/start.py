@@ -1,17 +1,31 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.handler import current_handler
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
-from tgbot.keyboards.inline import start_menu
+from tgbot.keyboards.inline import start_menu, task_menu
 from tgbot.misc.throttling import rate_limit
 from tgbot.models.User import User
 
 
 @rate_limit(10, key="start")
-async def bot_start(message: Message):
-    id_user = message.from_user.id
-    user = User.find_user_by_id(id_user)
+async def bot_start(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user = User(user_id=user_id)
     if user:
+        items = user.get_task()
+        if items:
+            await message.answer(f"Ваша задача: №{items[0][0]} \n{items[0][1]} дата: {items[0][2]}")
+            str_task = ''
+            for item in items:
+                str_task = str_task + f"{item[3]} \n"
+            await message.answer(str_task, reply_markup=task_menu)
+            await state.finish()
+            return
+
+        await state.set_state("Change_block")
+        await state.update_data(offset=0)
         await message.answer("Вы можете сгенерировать свой блок:", reply_markup=start_menu)
     else:
         await message.answer("Здравствуйте! Это демонстрационный бот. Чтобы отправить запрос на добавление нажмите "
@@ -26,8 +40,8 @@ async def button_notes(call: CallbackQuery):
     await call.message.answer("Нажата кнопка Описание")
 
 
-async def open_menu(message: Message):
-    await message.answer("Главное меню:", reply_markup=start_menu)
+# async def open_menu(message: Message):
+#     await message.answer("Главное меню:", reply_markup=start_menu)
 
 
 async def be_happy(call: CallbackQuery):
@@ -48,8 +62,7 @@ async def invite_request(message: Message):
 
 
 def register_start(dp: Dispatcher):
-    dp.register_message_handler(bot_start, commands=["start"])
-    dp.register_message_handler(open_menu, commands=["menu"])
+    dp.register_message_handler(bot_start, Command(["start", "menu"]), state="*")
     dp.register_callback_query_handler(button_task, text="Task")
     dp.register_callback_query_handler(button_notes, text="Notes")
     dp.register_callback_query_handler(be_happy, text="Gift")

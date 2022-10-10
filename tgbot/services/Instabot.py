@@ -23,7 +23,7 @@ options.add_argument("user-data-dir=C:/Users/griff/selenium")
 browser = webdriver.Chrome(options=options)
 browser.get('https://www.instagram.com')
 
-sleep(4)
+sleep(3)
 try:
     username_input = browser.find_element(By.CSS_SELECTOR, "input[name='username']")
     password_input = browser.find_element(By.CSS_SELECTOR, "input[name='password']")
@@ -41,7 +41,7 @@ except NoSuchElementException:
 # sleep(5)
 # click_button_by_text(browser, "Не сейчас")
 
-sleep(4)
+sleep(3)
 browser.get(f'https://www.instagram.com/{parent_user}/followers')
 
 sleep(4)
@@ -53,26 +53,34 @@ link_followers = browser.find_element(By.CSS_SELECTOR, "a[href*='/followers']")
 total_followers = int(link_followers.text.split(" ")[0])
 print(total_followers)
 
+current.send_keys(Keys.TAB)
+current = browser.switch_to.active_element
+current.send_keys(Keys.TAB)
+current = browser.switch_to.active_element
+current.send_keys(Keys.TAB)
+current = browser.switch_to.active_element
+
 db = DB("D:/WORK/python/Telegram/TestBot/base.db")
 followers = []
 nn = 0
+stop_search = 3
+followers_count = 0
 while len(followers) < total_followers:
-    current.send_keys(Keys.TAB)
-    current = browser.switch_to.active_element
-    current.send_keys(Keys.TAB)
-    current = browser.switch_to.active_element
-    current.send_keys(Keys.TAB)
-    current = browser.switch_to.active_element
-    sleep(1)
+    current.send_keys(Keys.END)
+    sleep(4)
+    elements = dialog.find_elements(By.CSS_SELECTOR, "div[aria-labelledby]:nth-last-child(-n+30)")
 
-    elements = dialog.find_elements(By.CSS_SELECTOR, "div[aria-labelledby]:nth-last-child(-n+20)")
     for element in elements:
         a = element.find_element(By.CSS_SELECTOR, "a[href]")
         link = a.get_attribute('href')
         name = link.replace('https://www.instagram.com/', '@')
         name = name.replace('/', '')
         if [name, link] in followers:
-            if followers.index([name, link], 0, 5) :
+            try:
+                index = followers.index([name, link], 20, 40)
+            except ValueError:
+                index = False
+            if index:
                 break
             continue
         followers.append([name, link])
@@ -81,7 +89,16 @@ while len(followers) < total_followers:
         nn += 1
         print(nn, name, link)
 
-print("Запись а базу данных", nn, "элементов...")
+    print(stop_search, followers_count, len(followers))
+    if followers_count == len(followers):  # изменился ли состав данных
+        stop_search = stop_search - 1  # если нет то начинаме отсчет до завершения поиска
+        if stop_search == 0:
+            break
+    else:
+        stop_search = 3
+    followers_count = len(followers)
+
+print("Запись а базу данных", nn, "элем...")
 db.connection.commit()
 print("Обработка завершена.")
 db.connection.close()

@@ -4,13 +4,8 @@ from aiogram.utils.markdown import hcode
 
 
 async def bot_echo(message: types.Message):
-    text = [
-        "Эхо без состояния.",
-        "Сообщение:",
-        message.text
-    ]
-
-    await message.answer('\n'.join(text))
+    print(message)
+    await message.answer("ping")
 
 
 async def bot_echo_all(message: types.Message, state: FSMContext):
