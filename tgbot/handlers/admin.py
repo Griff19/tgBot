@@ -31,7 +31,8 @@ async def admin_start(message: Message):
     await message.reply("Hello, admin!")
 
 
-async def show_admin_menu(message: Message):
+async def show_admin_menu(message: Message, state: FSMContext):
+    await state.set_state("Admin")
     await message.answer("Меню администратора:", reply_markup=admin_menu)
 
 
@@ -71,14 +72,12 @@ async def user_action(call: CallbackQuery):
 
 # допускаем пользователя к работе с ботом
 async def invite_user(call: CallbackQuery):
-
-    print(call)
     await call.message.answer("Статус пользователя изменен")
     await call.message.answer("Новые пользователи:", reply_markup=get_list_new_user())
 
 
 def register_admin(dp: Dispatcher):
-    dp.register_message_handler(show_admin_menu, commands=["admin"], is_admin=True)
-    dp.register_callback_query_handler(get_new_user, text='show_new_users', is_admin=True)
+    dp.register_message_handler(show_admin_menu, commands=["admin"], is_admin=True, state="*")
+    dp.register_callback_query_handler(get_new_user, text='show_new_users', is_admin=True, state="Admin")
     dp.register_callback_query_handler(user_action, text_contains="action", state="invite_user", is_admin=True)
     dp.register_message_handler(invite_user, commands=['invite'], state="invite_user", is_admin=True)

@@ -9,6 +9,13 @@ import datetime
 class User(BaseModel):
     table = 'user'
 
+    id = 0
+    alias = ''
+    name = ''
+    surname = ''
+    status = ''
+    note = ''
+
     STATUS_NEW = 'new'
     STATUS_MEMBER = 'member'
     STATUS_ADMIN = 'admin'
@@ -22,9 +29,7 @@ class User(BaseModel):
         else:
             if alias != '':
                 user = self.find_user_by_alias(alias)
-            print("Пользователь не найден")
 
-        print(user)
         if user:
             self.id = user[0]
             self.alias = user[1]
@@ -32,6 +37,11 @@ class User(BaseModel):
             self.surname = user[3]
             self.status = user[4]
             self.note = user[5]
+
+    def is_member(self):
+        status = self.db.cursor.execute("SELECT status FROM user WHERE id = ?;", (self.id,)).fetchone()
+        return status[0] == User.STATUS_MEMBER
+
 
     def get_accounts(self):
         rows = self.db.cursor.execute("SELECT * FROM account WHERE status = ? AND user_id = ?;", (Account.STATUS_WORK, self.id)).fetchall()
@@ -94,7 +104,7 @@ class User(BaseModel):
     def find_user_by_id(cls, user_id):
         db = DB()
         user = db.cursor.execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
-        print(user)
+
         return user
 
     @classmethod

@@ -1,4 +1,3 @@
-
 from time import sleep
 from selenium import webdriver
 from selenium.common import NoSuchElementException
@@ -17,7 +16,7 @@ def click_button_by_text(browser, text: str):
             button.click()
             break
 
-parent_user = 'ivan_gredasov'
+parent_user = 'astrakhan24'
 options = Options()
 options.add_argument("user-data-dir=C:/Users/griff/selenium")
 browser = webdriver.Chrome(options=options)
