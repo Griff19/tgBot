@@ -15,6 +15,10 @@ async def bot_start(message: Message, state: FSMContext):
     user = User(user_id=user_id)
 
     if user.id:
+        if user.is_admin():
+            count = User.count_new()
+            if count > 0:
+                await message.answer(f"\U00002757 Есть запросы от новых пользователей! {count} шт.")
         if user.is_member():
             items = user.get_task()
             if items:

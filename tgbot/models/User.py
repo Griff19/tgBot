@@ -2,6 +2,7 @@ from tgbot.models.Account import Account
 from tgbot.models.BaseModel import BaseModel
 from tgbot.models.Task import Task
 from tgbot.services.DB import DB
+from tgbot.config import load_config
 
 import datetime
 
@@ -42,6 +43,9 @@ class User(BaseModel):
         status = self.db.cursor.execute("SELECT status FROM user WHERE id = ?;", (self.id,)).fetchone()
         return status[0] == User.STATUS_MEMBER
 
+    def is_admin(self):
+        config = load_config("../../.env")
+        return self.id in config.tg_bot.admin_ids
 
     def get_accounts(self):
         rows = self.db.cursor.execute("SELECT * FROM account WHERE status = ? AND user_id = ?;", (Account.STATUS_WORK, self.id)).fetchall()
@@ -99,6 +103,12 @@ class User(BaseModel):
         db = DB()
         rows = db.cursor.execute("SELECT id, alias, name, surname FROM user WHERE status = 'new';").fetchall()
         return rows
+
+    @classmethod
+    def count_new(cls):
+        db = DB()
+        count = db.cursor.execute("SELECT count(id) FROM user WHERE status = 'new';").fetchone()
+        return int(count[0])
 
     @classmethod
     def find_user_by_id(cls, user_id):
