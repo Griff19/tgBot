@@ -31,9 +31,19 @@ async def generate_block(call: CallbackQuery, state: FSMContext):
 async def take_block(call: CallbackQuery, state: FSMContext):
     await call.answer()
     user = User(user_id=call.from_user.id)
-    user.create_task()
-    await state.finish()
-    await call.message.answer("Задача сформирована и назначена Вам", reply_markup=task_menu)
+    items = user.get_task()
+    if items:
+        await call.message.answer(f"Ваша задача: №{items[0][0]} \n{items[0][1]} дата: {items[0][2]}")
+        str_task = ''
+        for item in items:
+            str_task = str_task + f"{item[3]} \n"
+        await call.message.answer(str_task, reply_markup=task_menu)
+        await state.finish()
+        return
+    else:
+        user.create_task()
+        await state.finish()
+        await call.message.answer("Задача сформирована и назначена Вам", reply_markup=task_menu)
 
 
 async def task_view(call: CallbackQuery, state: FSMContext):
